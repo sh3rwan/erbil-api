@@ -6,11 +6,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // 1. CRITICAL FIX: Enable CORS for ALL origins
-// This stops the "Failed to fetch" error on your widget
+// This allows your GitHub Pages frontend to communicate with this API.
 app.use(cors()); 
 
 // --- Data Simulation ---
-// We generate realistic fake data to guarantee your widget always has something to show
+// Generates temporary, realistic data to ensure the widget always loads.
 let flightDataCache = {
     flights: [],
     lastFetched: null
@@ -31,6 +31,7 @@ function generateFlight(type, id) {
     const status = statuses[Math.floor(Math.random() * statuses.length)];
 
     const time = new Date();
+    // Schedule flights +/- 2 hours from now
     time.setHours(time.getHours() + Math.floor(Math.random() * 5) - 2); 
     time.setMinutes(Math.floor(Math.random() * 60));
 
@@ -55,6 +56,7 @@ function refreshCache() {
     newFlights.sort((a, b) => new Date(a.scheduled) - new Date(b.scheduled));
     flightDataCache.flights = newFlights;
     flightDataCache.lastFetched = new Date().toISOString();
+    console.log(`Cache updated with ${newFlights.length} flights.`);
 }
 
 // Initial load
@@ -64,11 +66,13 @@ refreshCache();
 
 app.get('/health', (req, res) => res.send('OK'));
 
+// Route to manually refresh data
 app.post('/api/flights/refresh', (req, res) => {
     refreshCache();
-    res.json({ success: true, message: "Refreshed" });
+    res.json({ success: true, message: "Data manually refreshed." });
 });
 
+// Main routes for widget data
 app.get('/api/flights', (req, res) => res.json(flightDataCache));
 
 app.get('/api/flights/arrivals', (req, res) => {
@@ -83,5 +87,5 @@ app.get('/api/flights/departures', (req, res) => {
 
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
 
-// REQUIRED FOR VERCEL
+// REQUIRED FOR VERCEL DEPLOYMENT
 module.exports = app;
