@@ -1,13 +1,13 @@
 {
   "name": "erbil-flight-api",
   "version": "1.0.0",
-  "description": "Serverless function to scrape and cache Erbil International Airport flight data.",
+  "description": "Serverless function to scrape and cache Erbil Airport flight status.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "axios": "^1.6.8",
+    "axios": "^1.7.2",
     "cheerio": "^1.0.0-rc.12"
   }
 }
